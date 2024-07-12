@@ -140,6 +140,14 @@ enum class OptionalDeviceExtensionVK : uint32_t {
   ///
   kEXTImageCompressionControl,
 
+  //----------------------------------------------------------------------------
+  /// For exporting FDs from backings of Vulkan textures to import into OpenGL
+  /// land and render using SurfaceTexture APIs.
+  ///
+  /// https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_external_memory_fd.html
+  ///
+  kKHRExternalMemoryFd,
+
   kLast,
 };
 

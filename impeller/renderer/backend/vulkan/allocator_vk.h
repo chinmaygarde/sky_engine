@@ -16,7 +16,8 @@
 
 namespace impeller {
 
-class AllocatorVK final : public Allocator {
+class AllocatorVK final : public Allocator,
+                          public BackendCast<AllocatorVK, Allocator> {
  public:
   // |Allocator|
   ~AllocatorVK() override;

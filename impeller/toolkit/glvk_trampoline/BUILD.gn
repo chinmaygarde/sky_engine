@@ -1,0 +1,24 @@
+# Copyright 2013 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../tools/impeller.gni")
+
+impeller_component("glvk_trampoline") {
+  sources = [
+    "proc_table_glvk.cc",
+    "proc_table_glvk.h",
+    "texture_source_glvk.cc",
+    "texture_source_glvk.h",
+    "trampoline_glvk.cc",
+    "trampoline_glvk.h",
+  ]
+
+  public_deps = [
+    "../../renderer",
+    "../../renderer/backend/gles",
+    "../../renderer/backend/vulkan",
+    "../../toolkit/gles",
+    "//flutter/fml",
+  ]
+}
