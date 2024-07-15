@@ -14,38 +14,38 @@ namespace impeller::glvk {
 // https://registry.khronos.org/OpenGL/extensions/EXT/EXT_external_objects_fd.txt
 
 #define FOR_EACH_GLVK_PROC(PROC) \
-  PROC(CreateMemoryObjectsEXT)   \
-  PROC(ImportMemoryFdEXT)        \
-  PROC(TextureStorageMem2DEXT)   \
-  PROC(GenTextures)              \
-  PROC(CreateShader)             \
-  PROC(DeleteShader)             \
-  PROC(CompileShader)            \
-  PROC(ShaderSource)             \
-  PROC(GenFramebuffers)          \
   PROC(AttachShader)             \
   PROC(BindFramebuffer)          \
-  PROC(LinkProgram)              \
-  PROC(DeleteProgram)            \
-  PROC(FramebufferTexture2D)     \
-  PROC(GetProgramiv)             \
-  PROC(CheckFramebufferStatus)   \
-  PROC(DeleteFramebuffers)       \
-  PROC(VertexAttribPointer)      \
-  PROC(EnableVertexAttribArray)  \
-  PROC(UseProgram)               \
-  PROC(DrawArrays)               \
-  PROC(GetShaderiv)              \
-  PROC(ClearColor)               \
-  PROC(CreateProgram)            \
-  PROC(Enable)                   \
-  PROC(Disable)                  \
-  PROC(Clear)                    \
-  PROC(Viewport)                 \
-  PROC(BufferData)               \
   PROC(BindTexture)              \
+  PROC(BufferData)               \
+  PROC(CheckFramebufferStatus)   \
+  PROC(Clear)                    \
+  PROC(ClearColor)               \
+  PROC(CompileShader)            \
+  PROC(CreateMemoryObjectsEXT)   \
+  PROC(CreateProgram)            \
+  PROC(CreateShader)             \
+  PROC(DeleteFramebuffers)       \
+  PROC(DeleteMemoryObjectsEXT)   \
+  PROC(DeleteProgram)            \
+  PROC(DeleteShader)             \
   PROC(DeleteTextures)           \
-  PROC(DeleteMemoryObjectsEXT)
+  PROC(Disable)                  \
+  PROC(DrawArrays)               \
+  PROC(Enable)                   \
+  PROC(EnableVertexAttribArray)  \
+  PROC(FramebufferTexture2D)     \
+  PROC(GenFramebuffers)          \
+  PROC(GenTextures)              \
+  PROC(GetProgramiv)             \
+  PROC(GetShaderiv)              \
+  PROC(ImportMemoryFdEXT)        \
+  PROC(LinkProgram)              \
+  PROC(ShaderSource)             \
+  PROC(TextureStorageMem2DEXT)   \
+  PROC(UseProgram)               \
+  PROC(VertexAttribPointer)      \
+  PROC(Viewport)
 
 class ProcTableGLVK {
  public:

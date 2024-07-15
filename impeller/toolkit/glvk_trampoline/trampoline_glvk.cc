@@ -5,6 +5,7 @@
 #include "impeller/toolkit/glvk_trampoline/trampoline_glvk.h"
 
 #include "impeller/base/validation.h"
+#include "impeller/renderer/backend/gles/formats_gles.h"
 
 namespace impeller::glvk {
 
@@ -96,8 +97,11 @@ bool TrampolineGLVK::CopyTexture(GLuint from_texture, GLuint to_texture) const {
                            to_texture,            //
                            0                      //
   );
-  FML_CHECK(gl_.CheckFramebufferStatus(GL_FRAMEBUFFER) ==
-            GL_FRAMEBUFFER_COMPLETE);
+  FML_LOG(IMPORTANT) << "From Texture: " << from_texture
+                     << " To Texture: " << to_texture;
+  const auto fb_status = gl_.CheckFramebufferStatus(GL_FRAMEBUFFER);
+  FML_CHECK(fb_status == GL_FRAMEBUFFER_COMPLETE)
+      << "Incomplete framebuffer: " << DebugToFramebufferError(fb_status);
 
   gl_.Disable(GL_DITHER);
 
