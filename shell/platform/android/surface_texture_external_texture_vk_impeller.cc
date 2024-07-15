@@ -4,11 +4,16 @@
 
 #include "flutter/shell/platform/android/surface_texture_external_texture_vk_impeller.h"
 
+#include <chrono>
+
 #include <GLES2/gl2.h>
 #define GL_GLEXT_PROTOTYPES
 #include <GLES2/gl2ext.h>
 
+#include "flutter/fml/trace_event.h"
 #include "flutter/impeller/display_list/dl_image_impeller.h"
+#include "flutter/impeller/renderer/backend/vulkan/command_buffer_vk.h"
+#include "flutter/impeller/renderer/backend/vulkan/command_encoder_vk.h"
 #include "flutter/impeller/renderer/backend/vulkan/surface_context_vk.h"
 #include "flutter/impeller/renderer/backend/vulkan/texture_vk.h"
 #include "flutter/impeller/toolkit/glvk_trampoline/texture_source_glvk.h"
@@ -82,6 +87,69 @@ SurfaceTextureExternalTextureVKImpeller::
 SurfaceTextureExternalTextureVKImpeller::
     ~SurfaceTextureExternalTextureVKImpeller() = default;
 
+static bool SetTextureLayoutSync(const ContextVK& context,
+                                 const TextureSourceVK* texture,
+                                 vk::ImageLayout layout) {
+  if (!texture) {
+    return true;
+  }
+  auto command_buffer = context.CreateCommandBuffer();
+  if (!command_buffer) {
+    VALIDATION_LOG
+        << "Could not create command buffer for texture layout update.";
+    return false;
+  }
+  command_buffer->SetLabel("GLVKTextureLayoutUpdateCB");
+  const auto& encoder = CommandBufferVK::Cast(*command_buffer).GetEncoder();
+  const auto command_buffer_vk = encoder->GetCommandBuffer();
+
+  BarrierVK barrier;
+  barrier.cmd_buffer = command_buffer_vk;
+  barrier.new_layout = layout;
+  barrier.src_stage = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                      impeller::vk::PipelineStageFlagBits::eFragmentShader;
+  barrier.src_access = vk::AccessFlagBits::eColorAttachmentWrite |
+                       vk::AccessFlagBits::eShaderRead;
+  barrier.dst_stage = impeller::vk::PipelineStageFlagBits::eFragmentShader;
+  barrier.dst_access = vk::AccessFlagBits::eShaderRead;
+
+  if (!texture->SetLayout(barrier).ok()) {
+    VALIDATION_LOG << "Could not encoder layout transition.";
+    return false;
+  }
+
+  encoder->EndCommandBuffer();
+
+  vk::SubmitInfo submit_info;
+  submit_info.setCommandBuffers(command_buffer_vk);
+
+  // There is no need to track the fence in the encoder since we are going to do
+  // a sync wait for completion.
+  auto fence = context.GetDevice().createFenceUnique(vk::FenceCreateFlags{});
+  if (fence.result != impeller::vk::Result::eSuccess) {
+    VALIDATION_LOG << "Could not create fence.";
+    return false;
+  }
+
+  if (context.GetGraphicsQueue()->Submit(submit_info, fence.value.get()) !=
+      impeller::vk::Result::eSuccess) {
+    VALIDATION_LOG << "Could not submit layout transition fence.";
+    return false;
+  }
+
+  using namespace std::chrono_literals;
+
+  if (context.GetDevice().waitForFences(
+          fence.value.get(), VK_TRUE,
+          std::chrono::duration_cast<std::chrono::nanoseconds>(1s).count()) !=
+      impeller::vk::Result::eSuccess) {
+    VALIDATION_LOG << "Could not perform sync wait on fence.";
+    return false;
+  }
+
+  return true;
+}
+
 // |SurfaceTextureExternalTexture|
 void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
     PaintContext& context,
@@ -122,6 +190,9 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
 
   auto texture = GetCachedTexture(
       context_vk, ISize::MakeWH(bounds.width(), bounds.height()));
+
+  SetTextureLayoutSync(context_vk, texture.get(),
+                       vk::ImageLayout::eShaderReadOnlyOptimal);
 
   dl_image_ = DlImageImpeller::Make(
       std::make_shared<TextureVK>(surface_context.GetParent(), texture));
