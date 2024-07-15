@@ -8,7 +8,9 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GLES2/gl2ext.h>
 
+#include "flutter/impeller/display_list/dl_image_impeller.h"
 #include "flutter/impeller/renderer/backend/vulkan/surface_context_vk.h"
+#include "flutter/impeller/renderer/backend/vulkan/texture_vk.h"
 #include "flutter/impeller/toolkit/glvk_trampoline/texture_source_glvk.h"
 
 namespace flutter {
@@ -99,8 +101,9 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
   // TODO(csg): These casts are extremely dodgy after the introduction of the
   // surface context. Make this easier to reconcile. Perhaps by removing the
   // need for a surface context.
-  const auto& context_vk = ContextVK::Cast(
-      *SurfaceContextVK::Cast(*context.aiks_context->GetContext()).GetParent());
+  const auto& surface_context =
+      SurfaceContextVK::Cast(*context.aiks_context->GetContext());
+  const auto& context_vk = ContextVK::Cast(*surface_context.GetParent());
 
   if (!egl_context_->MakeCurrent(*egl_surface_)) {
     VALIDATION_LOG
@@ -117,20 +120,38 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
   Update();
   glDeleteTextures(1u, &external_texture);
 
-  // TODO(csg): Cache this by the size of the texture.
-  auto texture = std::make_shared<glvk::TextureSourceGLVK>(
-      context_vk,                                     //
-      trampoline_,                                    //
-      ISize::MakeWH(bounds.width(), bounds.height())  //
-  );
+  auto texture = GetCachedTexture(
+      context_vk, ISize::MakeWH(bounds.width(), bounds.height()));
 
-  if (!texture->IsValid()) {
-    VALIDATION_LOG << "Could not create trampoline texture.";
-    return;
-  }
+  dl_image_ = DlImageImpeller::Make(
+      std::make_shared<TextureVK>(surface_context.GetParent(), texture));
 }
 
 // |SurfaceTextureExternalTexture|
-void SurfaceTextureExternalTextureVKImpeller::Detach() {}
+void SurfaceTextureExternalTextureVKImpeller::Detach() {
+  SurfaceTextureExternalTexture::Detach();
+  cached_texture_vk_.reset();
+}
+
+std::shared_ptr<impeller::glvk::TextureSourceGLVK>
+SurfaceTextureExternalTextureVKImpeller::GetCachedTexture(
+    const ContextVK& context,
+    const impeller::ISize& size) {
+  if (cached_texture_vk_ &&
+      cached_texture_vk_->GetTextureDescriptor().size == size) {
+    return cached_texture_vk_;
+  }
+  cached_texture_vk_ = nullptr;
+  auto texture = std::make_shared<glvk::TextureSourceGLVK>(context,      //
+                                                           trampoline_,  //
+                                                           size          //
+  );
+  if (!texture->IsValid()) {
+    VALIDATION_LOG << "Could not create trampoline texture.";
+    return nullptr;
+  }
+  cached_texture_vk_ = std::move(texture);
+  return cached_texture_vk_;
+}
 
 }  // namespace flutter

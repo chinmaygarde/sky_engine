@@ -65,7 +65,8 @@ TextureSourceGLVK::TextureSourceGLVK(const ContextVK& context,
   image_info.arrayLayers = 1u;
   image_info.samples = vk::SampleCountFlagBits::e1;
   image_info.tiling = vk::ImageTiling::eLinear;
-  image_info.usage = vk::ImageUsageFlagBits::eColorAttachment;
+  image_info.usage = vk::ImageUsageFlagBits::eColorAttachment |
+                     vk::ImageUsageFlagBits::eSampled;
   image_info.sharingMode = vk::SharingMode::eExclusive;
   image_info.initialLayout = vk::ImageLayout::eUndefined;
 
@@ -174,8 +175,6 @@ TextureSourceGLVK::TextureSourceGLVK(const ContextVK& context,
   //----------------------------------------------------------------------------
   // Step 6: Create an OpenGL handle from the exported Vulkan file handle.
   //
-
-  //----------------------------------------------------------------------------
   // @warning    After this point is spooky GL land with non-RAII handles and
   //             dodgy GL error era error handling. There may be no early
   //             returns till success.

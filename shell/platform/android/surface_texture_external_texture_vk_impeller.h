@@ -11,6 +11,7 @@
 #include "flutter/impeller/toolkit/egl/context.h"
 #include "flutter/impeller/toolkit/egl/display.h"
 #include "flutter/impeller/toolkit/egl/surface.h"
+#include "flutter/impeller/toolkit/glvk_trampoline/texture_source_glvk.h"
 #include "flutter/impeller/toolkit/glvk_trampoline/trampoline_glvk.h"
 #include "flutter/shell/platform/android/surface_texture_external_texture.h"
 
@@ -39,6 +40,7 @@ class SurfaceTextureExternalTextureVKImpeller final
   std::unique_ptr<impeller::egl::Context> egl_context_;
   std::unique_ptr<impeller::egl::Surface> egl_surface_;
   std::shared_ptr<impeller::glvk::TrampolineGLVK> trampoline_;
+  std::shared_ptr<impeller::glvk::TextureSourceGLVK> cached_texture_vk_;
   bool is_valid_ = false;
 
   // |SurfaceTextureExternalTexture|
@@ -46,6 +48,10 @@ class SurfaceTextureExternalTextureVKImpeller final
 
   // |SurfaceTextureExternalTexture|
   void Detach() override;
+
+  std::shared_ptr<impeller::glvk::TextureSourceGLVK> GetCachedTexture(
+      const impeller::ContextVK& context,
+      const impeller::ISize& size);
 };
 
 }  // namespace flutter
