@@ -27,6 +27,8 @@ class TextureSourceGLVK final : public TextureSourceVK {
 
   bool IsValid() const;
 
+  GLuint GetGLTextureHandle() const;
+
  private:
   std::shared_ptr<TrampolineGLVK> trampoline_;
   vk::UniqueDeviceMemory device_memory_;

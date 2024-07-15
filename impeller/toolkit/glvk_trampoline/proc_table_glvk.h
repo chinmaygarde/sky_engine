@@ -29,6 +29,12 @@ namespace impeller::glvk {
   PROC(DeleteProgram)            \
   PROC(FramebufferTexture2D)     \
   PROC(GetProgramiv)             \
+  PROC(CheckFramebufferStatus)   \
+  PROC(DeleteFramebuffers)       \
+  PROC(VertexAttribPointer)      \
+  PROC(EnableVertexAttribArray)  \
+  PROC(UseProgram)               \
+  PROC(DrawArrays)               \
   PROC(GetShaderiv)              \
   PROC(ClearColor)               \
   PROC(CreateProgram)            \

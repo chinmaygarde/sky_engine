@@ -23,6 +23,8 @@ class TrampolineGLVK {
 
   bool IsValid() const;
 
+  bool CopyTexture(GLuint from_texture, GLuint to_texture) const;
+
  private:
   ProcTableGLVK gl_;
   GLuint program_ = GL_NONE;

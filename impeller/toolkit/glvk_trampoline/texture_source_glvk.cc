@@ -250,4 +250,8 @@ bool TextureSourceGLVK::IsValid() const {
   return is_valid_;
 }
 
+GLuint TextureSourceGLVK::GetGLTextureHandle() const {
+  return gl_texture_;
+}
+
 }  // namespace impeller::glvk

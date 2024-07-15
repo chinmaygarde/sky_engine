@@ -9,8 +9,9 @@
 namespace impeller::glvk {
 
 static constexpr const char* kVertShader = R"IMPELLER_SHADER(#version 100
+attribute vec2 vPosition;
 void main() {
-  gl_Position = vec4(1.0, 1.0, 1.0, 1.0);
+  gl_Position = vec4(vPosition, 0.0, 1.0);
 }
 )IMPELLER_SHADER";
 
@@ -79,6 +80,44 @@ const ProcTableGLVK& TrampolineGLVK::GetProcTable() const {
 
 bool TrampolineGLVK::IsValid() const {
   return is_valid_;
+}
+
+bool TrampolineGLVK::CopyTexture(GLuint from_texture, GLuint to_texture) const {
+  if (!is_valid_) {
+    return false;
+  }
+
+  GLuint fbo = GL_NONE;
+  gl_.GenFramebuffers(1u, &fbo);
+  gl_.BindFramebuffer(GL_FRAMEBUFFER, fbo);
+  gl_.FramebufferTexture2D(GL_FRAMEBUFFER,        //
+                           GL_COLOR_ATTACHMENT0,  //
+                           GL_TEXTURE_2D,         //
+                           to_texture,            //
+                           0                      //
+  );
+  FML_CHECK(gl_.CheckFramebufferStatus(GL_FRAMEBUFFER) ==
+            GL_FRAMEBUFFER_COMPLETE);
+
+  gl_.Disable(GL_DITHER);
+
+  gl_.ClearColor(0.0, 1.0, 0.0, 1.0);
+  gl_.Clear(GL_COLOR_BUFFER_BIT);
+
+  gl_.UseProgram(program_);
+
+  static constexpr GLfloat kVertices[] = {
+      0.0f,  0.5f,   //
+      -0.5f, -0.5f,  //
+      0.5f,  -0.5f,  //
+      0.5f,  -0.5f,  //
+  };
+  gl_.VertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, 0, kVertices);
+  gl_.EnableVertexAttribArray(0);
+  gl_.DrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+  gl_.DeleteFramebuffers(1u, &fbo);
+  return true;
 }
 
 }  // namespace impeller::glvk

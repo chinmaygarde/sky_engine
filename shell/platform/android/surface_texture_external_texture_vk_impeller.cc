@@ -179,6 +179,9 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
     return;
   }
 
+  auto texture = GetCachedTexture(
+      context_vk, ISize::MakeWH(bounds.width(), bounds.height()));
+
   fml::ScopedCleanupClosure clear_context(
       [&]() { egl_context_->ClearCurrent(); });
 
@@ -186,13 +189,16 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
   glGenTextures(1u, &external_texture);
   Attach(external_texture);
   Update();
-  glDeleteTextures(1u, &external_texture);
 
-  auto texture = GetCachedTexture(
-      context_vk, ISize::MakeWH(bounds.width(), bounds.height()));
+  SetTextureLayoutSync(context_vk, texture.get(),
+                       vk::ImageLayout::eColorAttachmentOptimal);
+
+  trampoline_->CopyTexture(external_texture, texture->GetGLTextureHandle());
 
   SetTextureLayoutSync(context_vk, texture.get(),
                        vk::ImageLayout::eShaderReadOnlyOptimal);
+
+  glDeleteTextures(1u, &external_texture);
 
   dl_image_ = DlImageImpeller::Make(
       std::make_shared<TextureVK>(surface_context.GetParent(), texture));
