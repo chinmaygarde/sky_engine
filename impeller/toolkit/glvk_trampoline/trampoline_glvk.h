@@ -25,6 +25,7 @@ class TrampolineGLVK {
 
  private:
   ProcTableGLVK gl_;
+  GLuint program_ = GL_NONE;
 
   bool is_valid_ = false;
 };

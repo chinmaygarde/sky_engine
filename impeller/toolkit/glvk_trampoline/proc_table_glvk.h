@@ -18,6 +18,25 @@ namespace impeller::glvk {
   PROC(ImportMemoryFdEXT)        \
   PROC(TextureStorageMem2DEXT)   \
   PROC(GenTextures)              \
+  PROC(CreateShader)             \
+  PROC(DeleteShader)             \
+  PROC(CompileShader)            \
+  PROC(ShaderSource)             \
+  PROC(GenFramebuffers)          \
+  PROC(AttachShader)             \
+  PROC(BindFramebuffer)          \
+  PROC(LinkProgram)              \
+  PROC(DeleteProgram)            \
+  PROC(FramebufferTexture2D)     \
+  PROC(GetProgramiv)             \
+  PROC(GetShaderiv)              \
+  PROC(ClearColor)               \
+  PROC(CreateProgram)            \
+  PROC(Enable)                   \
+  PROC(Disable)                  \
+  PROC(Clear)                    \
+  PROC(Viewport)                 \
+  PROC(BufferData)               \
   PROC(BindTexture)              \
   PROC(DeleteTextures)           \
   PROC(DeleteMemoryObjectsEXT)
