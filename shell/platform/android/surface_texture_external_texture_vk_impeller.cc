@@ -193,7 +193,7 @@ void SurfaceTextureExternalTextureVKImpeller::ProcessFrame(
   SetTextureLayoutSync(context_vk, texture.get(),
                        vk::ImageLayout::eColorAttachmentOptimal);
 
-  trampoline_->CopyTexture(external_texture, texture->GetGLTextureHandle());
+  trampoline_->CopyTexture(external_texture, *texture);
 
   SetTextureLayoutSync(context_vk, texture.get(),
                        vk::ImageLayout::eShaderReadOnlyOptimal);

@@ -14,13 +14,17 @@ namespace impeller::glvk {
 // https://registry.khronos.org/OpenGL/extensions/EXT/EXT_external_objects_fd.txt
 
 #define FOR_EACH_GLVK_PROC(PROC) \
+  PROC(ActiveTexture)            \
   PROC(AttachShader)             \
+  PROC(BindAttribLocation)       \
+  PROC(BindBuffer)               \
   PROC(BindFramebuffer)          \
   PROC(BindTexture)              \
   PROC(BufferData)               \
   PROC(CheckFramebufferStatus)   \
   PROC(Clear)                    \
   PROC(ClearColor)               \
+  PROC(ColorMask)                \
   PROC(CompileShader)            \
   PROC(CreateMemoryObjectsEXT)   \
   PROC(CreateProgram)            \
@@ -32,17 +36,23 @@ namespace impeller::glvk {
   PROC(DeleteTextures)           \
   PROC(Disable)                  \
   PROC(DrawArrays)               \
+  PROC(DrawElements)             \
   PROC(Enable)                   \
   PROC(EnableVertexAttribArray)  \
+  PROC(Finish)                   \
+  PROC(Flush)                    \
   PROC(FramebufferTexture2D)     \
   PROC(GenFramebuffers)          \
   PROC(GenTextures)              \
   PROC(GetProgramiv)             \
   PROC(GetShaderiv)              \
+  PROC(GetUniformLocation)       \
   PROC(ImportMemoryFdEXT)        \
   PROC(LinkProgram)              \
   PROC(ShaderSource)             \
-  PROC(TextureStorageMem2DEXT)   \
+  PROC(TexParameteri)            \
+  PROC(TexStorageMem2DEXT)       \
+  PROC(Uniform1i)                \
   PROC(UseProgram)               \
   PROC(VertexAttribPointer)      \
   PROC(Viewport)

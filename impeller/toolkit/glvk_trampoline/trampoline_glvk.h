@@ -9,6 +9,8 @@
 
 namespace impeller::glvk {
 
+class TextureSourceGLVK;
+
 class TrampolineGLVK {
  public:
   TrampolineGLVK(ProcTableGLVK::Resolver resolver);
@@ -23,11 +25,13 @@ class TrampolineGLVK {
 
   bool IsValid() const;
 
-  bool CopyTexture(GLuint from_texture, GLuint to_texture) const;
+  bool CopyTexture(GLuint from_texture,
+                   const TextureSourceGLVK& to_texture) const;
 
  private:
   ProcTableGLVK gl_;
   GLuint program_ = GL_NONE;
+  GLint texture_uniform_location_ = 0;
 
   bool is_valid_ = false;
 };

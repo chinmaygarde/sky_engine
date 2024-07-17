@@ -196,14 +196,15 @@ TextureSourceGLVK::TextureSourceGLVK(const ContextVK& context,
   GLuint gl_texture = GL_NONE;
   gl.GenTextures(1u, &gl_texture);
   gl.BindTexture(GL_TEXTURE_2D, gl_texture);
-  gl.TextureStorageMem2DEXT(gl_texture,   // texture
-                            1u,           // levels
-                            GL_RGBA,      // internal format
-                            size.width,   // width
-                            size.height,  // height
-                            gl_memory,    // memory
-                            0u            // offset
+  gl.TexStorageMem2DEXT(GL_TEXTURE_2D,  // target
+                        1u,             // levels
+                        GL_RGBA8,       // internal format
+                        size.width,     // width
+                        size.height,    // height
+                        gl_memory,      // memory
+                        0u              // offset
   );
+
   gl.BindTexture(GL_TEXTURE_2D, GL_NONE);
 
   device_memory_ = std::move(device_memory.value);
