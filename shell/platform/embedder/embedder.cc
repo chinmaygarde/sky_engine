@@ -1196,7 +1196,8 @@ MakeRenderTargetFromBackingStoreImpeller(
     depth_stencil_texture_desc.sample_count = impeller::SampleCount::kCount1;
   }
 
-  auto depth_stencil_tex = impeller::TextureGLES::CreatePlaceholder(gl_context.GetReactor(), depth_stencil_texture_desc);
+  auto depth_stencil_tex = impeller::TextureGLES::CreatePlaceholder(
+      gl_context.GetReactor(), depth_stencil_texture_desc);
 
   impeller::DepthAttachment depth0;
   depth0.clear_depth = 0;
